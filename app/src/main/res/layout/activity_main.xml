@@ -29,15 +29,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Any"
-            android:id="@+id/any_network"
-            android:checked="true"/>
+            android:id="@+id/any_network" />
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Wifi"
-            android:id="@+id/wifi_network"
-            android:checked="true"/>
+            android:id="@+id/wifi_network" />
         
     </RadioGroup>
     
