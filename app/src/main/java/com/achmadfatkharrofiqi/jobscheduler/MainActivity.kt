@@ -7,6 +7,7 @@ import android.content.Context
 import android.os.Bundle
 import android.widget.Button
 import android.widget.RadioGroup
+import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -19,6 +20,8 @@ class MainActivity : AppCompatActivity() {
 
     private val rdgNetworkOptions: RadioGroup by lazy { network_options }
 
+    private val mDeviceIdleSwitch: Switch by lazy { idle_switch }
+    private val mDeviceChargingSwitch: Switch by lazy { charging_switch }
     private val btnCancelJobs: Button by lazy { btn_cancel_jobs }
     private val btnScheduleJob: Button by lazy { btn_schedule_job }
 
@@ -63,9 +66,11 @@ class MainActivity : AppCompatActivity() {
         val builder = JobInfo.Builder(JOB_ID, serviceName)
         builder.apply {
             setRequiredNetworkType(selectedNetworkOption)
+            setRequiresCharging(mDeviceChargingSwitch.isChecked)
+            setRequiresDeviceIdle(mDeviceIdleSwitch.isChecked)
         }
 
-        val constraintSet = selectedNetworkOption != JobInfo.NETWORK_TYPE_NONE
+        val constraintSet = (selectedNetworkOption != JobInfo.NETWORK_TYPE_NONE) || mDeviceChargingSwitch.isChecked || mDeviceIdleSwitch.isChecked
         if (constraintSet) {
             val myJobInfo = builder.build()
             mScheduler!!.schedule(myJobInfo)
