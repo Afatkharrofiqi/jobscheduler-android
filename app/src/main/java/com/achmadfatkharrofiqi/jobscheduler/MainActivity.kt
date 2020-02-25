@@ -65,9 +65,15 @@ class MainActivity : AppCompatActivity() {
             setRequiredNetworkType(selectedNetworkOption)
         }
 
-        val myJobInfo = builder.build()
-        mScheduler!!.schedule(myJobInfo)
-        Toast.makeText(this, "Job scheduled, job will run when the constraints are met.", Toast.LENGTH_SHORT).show()
+        val constraintSet = selectedNetworkOption != JobInfo.NETWORK_TYPE_NONE
+        if (constraintSet) {
+            val myJobInfo = builder.build()
+            mScheduler!!.schedule(myJobInfo)
+            Toast.makeText(this, "Job scheduled, job will run when the constraints are met.", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Please set at least one constraint", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private fun cancelJobs(){
