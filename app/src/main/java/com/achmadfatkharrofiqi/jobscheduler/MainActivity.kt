@@ -5,10 +5,7 @@ import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
-import android.widget.Button
-import android.widget.RadioGroup
-import android.widget.Switch
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -20,6 +17,8 @@ class MainActivity : AppCompatActivity() {
 
     private val rdgNetworkOptions: RadioGroup by lazy { network_options }
 
+    private val mSeekBar: SeekBar by lazy { seekbar }
+    private val seekBarProgress: TextView by lazy { seekbar_progress }
     private val mDeviceIdleSwitch: Switch by lazy { idle_switch }
     private val mDeviceChargingSwitch: Switch by lazy { charging_switch }
     private val btnCancelJobs: Button by lazy { btn_cancel_jobs }
@@ -38,6 +37,20 @@ class MainActivity : AppCompatActivity() {
         btnCancelJobs.setOnClickListener {
             cancelJobs()
         }
+
+        mSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (progress > 0){
+                    seekBarProgress.text = "$progress s"
+                }else {
+                    seekBarProgress.text = "Not Set"
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
     }
 
     private fun scheduleJob() {
@@ -70,7 +83,13 @@ class MainActivity : AppCompatActivity() {
             setRequiresDeviceIdle(mDeviceIdleSwitch.isChecked)
         }
 
-        val constraintSet = (selectedNetworkOption != JobInfo.NETWORK_TYPE_NONE) || mDeviceChargingSwitch.isChecked || mDeviceIdleSwitch.isChecked
+        val seekBarInteger = mSeekBar.progress
+        val seekBarSet = seekBarInteger > 0
+        if (seekBarSet) {
+            builder.setOverrideDeadline((seekBarInteger * 1000).toLong())
+        }
+
+        val constraintSet = selectedNetworkOption != JobInfo.NETWORK_TYPE_NONE || mDeviceChargingSwitch.isChecked || mDeviceIdleSwitch.isChecked || seekBarSet
         if (constraintSet) {
             val myJobInfo = builder.build()
             mScheduler!!.schedule(myJobInfo)
